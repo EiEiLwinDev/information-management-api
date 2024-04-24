@@ -35,9 +35,8 @@ class CustomerController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show($id): JsonResponse 
+    public function show(Customer $customer): JsonResponse 
     {
-        $customer = Customer::find($id);
         if(is_null($customer)){
             return $this->sendError('Customer not found.');
         }
