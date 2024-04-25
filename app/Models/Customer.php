@@ -11,7 +11,25 @@ class Customer extends Model
     protected $fillable = [
         'name',
         'passport',
-        'phone'
+        'phone',
+        'gender',
+        'created_by',
+        'updated_by'
     ];
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'customer_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 
 }

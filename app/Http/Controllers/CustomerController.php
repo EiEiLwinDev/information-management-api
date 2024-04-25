@@ -15,22 +15,24 @@ class CustomerController extends BaseController
      */
     public function index(): JsonResponse
     {
-        $customers = Customer::all();
+        $customers = Customer::with('documents')->get();
         return $this->sendResponse(CustomerResource::collection($customers), 'Customers  retrieved successfully.');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CustomerRequest $request) : JsonResponse
-    {
-        try{
-            $customer = Customer::create($request->validated());
-            return $this->sendResponse(new CustomerResource($customer), 'Product created successfully.');
-        }catch(Exception $e){
-            return $this->sendError($e->getMessage());
+        public function store(CustomerRequest $request) : JsonResponse
+        {
+            try{
+                $inputs = $request->all();
+                $inputs['created_by'] =  auth()->user()->id;                              
+                $customer = Customer::create($inputs);
+                return $this->sendResponse(new CustomerResource($customer), 'Customer created successfully.');
+            }catch(Exception $e){
+                return $this->sendError($e->getMessage());
+            }
         }
-    }
 
     /**
      * Display the specified resource.
@@ -47,9 +49,15 @@ class CustomerController extends BaseController
      * Update the specified resource in storage.
      */
     public function update(CustomerRequest $request, Customer $customer)
-    {
-        $customer->update($request->validated());
-        return $this->sendResponse(new CustomerResource($customer), 'Customer updated successfully.');
+    {        
+        try{
+            $inputs = $request->all();
+            $inputs['updated_by'] =  auth()->user()->id; 
+            $customer->update($inputs);
+            return $this->sendResponse(new CustomerResource($customer), 'Customer updated successfully.');
+        }catch(Exception $e){
+            return $this->sendError($e->getMessage());
+        }
     }
 
     /**

@@ -25,6 +25,7 @@ class CustomerRequest extends FormRequest
             'name' => ['required', 'string'],
             'phone' => ['required', 'string'],
             'passport' => ['required', 'string'],
+            'gender' => ['required', 'string']
         ];
     }
 }

@@ -22,9 +22,7 @@ class DocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', 'string'],
-            'file_path' => ['required', 'string'],
-            'content_url' => ['required', 'string'],
+            'type' => ['required', 'string'],            
             'customer_id' => ['required']
         ];
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\DocumentRequest;
 use App\Http\Resources\DocumentResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends BaseController
 {
@@ -25,7 +26,12 @@ class DocumentController extends BaseController
     public function store(DocumentRequest $request)
     {
         try{
-            $document = Document::create($request->validated());
+            $path = $request->file('document')->store('public/documents');
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
+            $inputs = $request->all();            
+            $inputs['file_path'] = ucfirst($inputs['type']) .'.'.$extension;
+            $inputs['content_url'] = $path;
+            $document = Document::create($inputs);
             return $this->sendResponse(new DocumentResource($document), 'Document created successfully.');
         }catch(Exception $e){
             return $this->sendError($e->getMessage());
@@ -59,5 +65,18 @@ class DocumentController extends BaseController
     {
         $document->delete();
         return $this->sendResponse([], 'Document deleted successfully.');
+    }
+
+    public function download($id)
+    {
+        $document = Document::find($id);
+        $path = storage_path('app/documents/' . $document->file_path);
+
+        if (!Storage::exists($path)) {
+            abort(404);
+        }
+        return $this->sendResponse([
+            "file" => base64_encode(Storage::get($path))
+        ], 'Document deleted successfully.');
     }
 }
