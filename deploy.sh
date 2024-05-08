@@ -3,7 +3,7 @@
 # Define variables
 REMOTE_REPO="https://github.com/EiEiLwinDev/visa.git"
 LOCAL_REPO="/var/www/infm"
-SSH_KEY="/root/.ssh/id_rsa"
+SSH_KEY="/eieilwin/.ssh/id_rsa"
 SSH_USER="root"
 SSH_HOST="157.245.199.178"
 
