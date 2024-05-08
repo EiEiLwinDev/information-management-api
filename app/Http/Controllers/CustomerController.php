@@ -39,11 +39,15 @@ class CustomerController extends BaseController
      */
     public function show(Customer $customer): JsonResponse 
     {
+        $customer = Customer::with('documents')->find($customer->id);
+
         if(is_null($customer)){
             return $this->sendError('Customer not found.');
         }
+
         return $this->sendResponse(new CustomerResource($customer), 'Customer retrieved successfully.');
     }
+
 
     /**
      * Update the specified resource in storage.

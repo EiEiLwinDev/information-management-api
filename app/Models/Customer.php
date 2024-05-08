@@ -13,6 +13,7 @@ class Customer extends Model
         'passport',
         'phone',
         'gender',
+        'dob',
         'created_by',
         'updated_by'
     ];

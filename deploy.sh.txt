@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Define variables
+REMOTE_REPO="https://github.com/EiEiLwinDev/visa.git"
+LOCAL_REPO="/var/www/infm"
+SSH_KEY="/root/.ssh/id_rsa"
+SSH_USER="root"
+SSH_HOST="157.245.199.178"
+
+# Ensure SSH key is set to correct permissions
+chmod 600 $SSH_KEY
+
+# Pull latest changes from GitHub repository
+cd $LOCAL_REPO
+git pull origin main
+
+# Optionally, perform any additional tasks such as installing dependencies
+# and building assets here.
+
+# Run npm install
+npm install
+
+# Run composer install
+composer install
+
+# Run PHP artisan commands
+php artisan migrate --force
+php artisan storage:link --force
+
+# Exit if git pull fails
+if [ $? -ne 0 ]; then
+    echo "Failed to pull latest code from GitHub repository."
+    exit 1
+fi
+
+# SSH into the server and deploy the code
+ssh -i $SSH_KEY $SSH_USER@$SSH_HOST << EOF
+    cd $LOCAL_REPO
+    git pull origin main
+    # Optionally, restart your web server or execute any post-deployment tasks here.
+EOF
+
+# Exit with success message
+echo "Deployment successful."
+exit 0

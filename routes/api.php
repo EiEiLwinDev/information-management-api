@@ -19,7 +19,7 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group( function () {
     Route::resource('customers', CustomerController::class);
     Route::resource('documents', DocumentController::class);
-    Route::get('/download/{id}', 'DownloadController@download')->name('download');
+    Route::get('/documents/{id}/download', [DocumentController::class, 'download'])->name('download');
 });
          
 

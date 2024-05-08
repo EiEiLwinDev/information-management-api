@@ -8,6 +8,7 @@ use App\Http\Requests\DocumentRequest;
 use App\Http\Resources\DocumentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DocumentController extends BaseController
 {
@@ -28,9 +29,10 @@ class DocumentController extends BaseController
         try{
             $path = $request->file('document')->store('public/documents');
             $extension = pathinfo($path, PATHINFO_EXTENSION);
+            $fileName = pathinfo($path, PATHINFO_FILENAME);
             $inputs = $request->all();            
-            $inputs['file_path'] = ucfirst($inputs['type']) .'.'.$extension;
-            $inputs['content_url'] = $path;
+            $inputs['file_path'] = $fileName.'.'.$extension;
+            $inputs['content_url'] = Storage::url($path);
             $document = Document::create($inputs);
             return $this->sendResponse(new DocumentResource($document), 'Document created successfully.');
         }catch(Exception $e){
@@ -69,14 +71,22 @@ class DocumentController extends BaseController
 
     public function download($id)
     {
-        $document = Document::find($id);
-        $path = storage_path('app/documents/' . $document->file_path);
-
-        if (!Storage::exists($path)) {
-            abort(404);
+        $document = Document::with('customer')->find($id);
+        if(empty($document)){
+            return $this->sendError('File not found', [], 404);
         }
+        $user = auth()->user();
+        $filePath = 'public/documents/'.$document->file_path;
+        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+        $fileName = Str::replace(' ', '-', strtolower($document->customer->name)).'-'.Str::replace(' ','-', $document->type).'.'.$extension;
+               
+        if (!Storage::exists($filePath)) {
+            return $this->sendError('File not found', [], 404);
+        }
+
         return $this->sendResponse([
-            "file" => base64_encode(Storage::get($path))
-        ], 'Document deleted successfully.');
+            "file" => base64_encode(Storage::get($filePath)),
+            "name" => $fileName
+        ], 'Document has been downloaded successfully.');
     }
 }
