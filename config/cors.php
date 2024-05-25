@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
+<<<<<<< Updated upstream
     'allowed_origins' => [env('FRONTEND_URL', '*')],
+=======
+    'allowed_origins' => [env('FRONTEND_URL', 'http://152.42.236.196')],
+>>>>>>> Stashed changes
 
     'allowed_origins_patterns' => [],
 
