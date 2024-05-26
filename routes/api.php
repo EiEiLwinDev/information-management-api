@@ -13,7 +13,7 @@ Route::controller(RegisterController::class)->group(function(){
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth:sanctum', 'cors');
 
 
 Route::middleware('auth:sanctum')->group( function () {
