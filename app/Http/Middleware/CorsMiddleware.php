@@ -6,27 +6,25 @@ use Illuminate\Http\Request;
 
 class CorsMiddleware
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
     public function handle(Request $request, Closure $next)
     {
         $response = $next($request);
 
-        $allowedOrigins = config('cors.allowed_origins', []);
-        $allowedMethods = config('cors.allowed_methods', ['*']);
-        $allowedHeaders = config('cors.allowed_headers', ['*']);
-        $supportsCredentials = config('cors.supports_credentials', false) ? 'true' : 'false';
+        $response->headers->set('Access-Control-Allow-Origin', env('FRONTEND_URL', 'http://157.245.199.178'));
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
 
-        $origin = $request->header('Origin');
-
-        if (in_array('*', $allowedOrigins) || in_array($origin, $allowedOrigins)) {
-            $response->headers->set('Access-Control-Allow-Origin', $origin);
-            $response->headers->set('Access-Control-Allow-Methods', implode(', ', $allowedMethods));
-            $response->headers->set('Access-Control-Allow-Headers', implode(', ', $allowedHeaders));
-            $response->headers->set('Access-Control-Allow-Credentials', $supportsCredentials);
-
-            if ($request->isMethod('OPTIONS')) {
-                $response->setStatusCode(200);
-                return $response;
-            }
+        if ($request->isMethod('OPTIONS')) {
+            $response->setStatusCode(200);
+            return $response;
         }
 
         return $response;
