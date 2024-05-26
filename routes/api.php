@@ -15,6 +15,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::options('/{any}', function () {
+    return response()->json([], 200);
+})->where('any', '.*');
 
 Route::middleware('auth:sanctum')->group( function () {
     Route::resource('customers', CustomerController::class);
