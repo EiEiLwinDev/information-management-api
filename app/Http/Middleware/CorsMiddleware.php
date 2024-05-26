@@ -15,16 +15,32 @@ class CorsMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $response = $next($request);
+        $allowedOrigins = [env('FRONTEND_URL', 'http://157.245.199.178')];
+        $origin = $request->header('Origin');
 
-        $response->headers->set('Access-Control-Allow-Origin', env('FRONTEND_URL', 'http://152.42.236.196'));
-        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        if (in_array('*', $allowedOrigins) || in_array($origin, $allowedOrigins)) {
+            header('Access-Control-Allow-Origin: ' . $origin);
+            header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization');
+            header('Access-Control-Allow-Credentials: true');
+        }
 
         if ($request->isMethod('OPTIONS')) {
-            $response->setStatusCode(200);
-            return $response;
+            return response()->json([], 204, [
+                'Access-Control-Allow-Origin' => $origin,
+                'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Content-Type, Authorization',
+                'Access-Control-Allow-Credentials' => 'true',
+            ]);
+        }
+
+        $response = $next($request);
+
+        if (in_array('*', $allowedOrigins) || in_array($origin, $allowedOrigins)) {
+            $response->headers->set('Access-Control-Allow-Origin', $origin);
+            $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
 
         return $response;
