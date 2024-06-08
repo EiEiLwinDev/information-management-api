@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Http\Controllers\BaseController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class RegisterController extends BaseController
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        $success['token'] =  $user->createToken('MyApp')->plainTextToken;
+        $success['token'] =  $user->createToken('InformationManagement')->plainTextToken;
         $success['name'] =  $user->name;
    
         return $this->sendResponse($success, 'User register successfully.');
@@ -50,5 +51,17 @@ class RegisterController extends BaseController
         else{ 
             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
         } 
+    }
+
+    public function logout(Request $request): Response
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate(); 
+
+        $request->session()->regenerateToken();
+
+        return response()->noContent();
+        // return $this->sendResponse([], 'User logout successfully.');
     }
 }

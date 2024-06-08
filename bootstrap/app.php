@@ -14,7 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \App\Http\Middleware\CorsMiddleware::class
+            \App\Http\Middleware\CorsMiddleware::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            '/api/*','/login','/register','/logout'
         ]);
 
         $middleware->alias([
