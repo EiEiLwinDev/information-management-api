@@ -7,8 +7,8 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\RegisterController;
 
 Route::controller(RegisterController::class)->group(function(){
-    Route::post('register', 'register');
-    Route::post('login', 'login');
+    Route::post('/api/register', 'register');
+    Route::post('/api/login', 'login');
 });
 
 Route::get('/user', function (Request $request) {

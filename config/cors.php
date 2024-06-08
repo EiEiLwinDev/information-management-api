@@ -15,8 +15,8 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie','login'],
-    // 'paths' => ['*'],
+    // 'paths' => ['api/*', 'sanctum/csrf-cookie','login'],
+    'paths' => ['*'],
     'allowed_methods' => ['*'],
     'allowed_origins' => [env('FRONTEND_URL', 'http://152.42.236.196')],
     // 'allowed_origins' => ['*'],
