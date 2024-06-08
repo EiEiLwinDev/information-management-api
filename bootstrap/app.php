@@ -16,11 +16,14 @@ return Application::configure(basePath: dirname(__DIR__))
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \App\Http\Middleware\CorsMiddleware::class
         ]);
+ 	$middleware->validateCsrfTokens(except: [
+            '/api/*','/login','/register'
+        ]);
 
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+ 
     })->create();
